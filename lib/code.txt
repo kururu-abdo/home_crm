@@ -1,0 +1,5 @@
+getThemeManager(context)
+  .setThemeMode(ThemeMode.light)
+
+  getThemeManager(context)
+  .toggleDarkLightTheme();
