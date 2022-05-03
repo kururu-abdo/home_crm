@@ -111,7 +111,15 @@ bool _first=false;
                              } 
                              
                              else if  (model.state ==ViewState.EROR){
-  return Center(child: Text('Error'),);
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+
+      Image.asset('assets/images/cross.png') ,
+Text('Something going wrong')
+    ],
+  );
                             
                             
                             
@@ -185,7 +193,15 @@ bool _first=false;
                                                  shape: BoxShape.circle
                                                ),
                                                
-                                               child: Center(child: IconButton(onPressed: (){}, icon: Icon(Icons.location_on)),),
+                                               child: Center(child: IconButton(onPressed: ()async{
+
+var uri =Uri.parse(
+  // scheme:
+  'https://www.google.com/maps/search/?api=1&query=${ctrl.lead!.lat},${ctrl.lead!.lon}');
+  await launchUrl(uri);
+
+                                                 
+                                               }, icon: Icon(Icons.location_on)),),
                                                ),
                                      SizedBox(width: 10,),
                                                 Container(width: 40,height: 40,
@@ -196,7 +212,12 @@ bool _first=false;
                                                  
                                                ),
                                                
-                                                     child: Center(child: IconButton(onPressed: (){}, icon: Icon(Icons.call)),),
+                                                     child: Center(child: IconButton(onPressed: ()async{
+  await launchUrl(Uri(
+        scheme:
+        'tel' ,  path: '${ctrl.lead!.phone}'));
+
+                                                     }, icon: Icon(Icons.call)),),
                                      
                                                )
                                              ],
@@ -211,7 +232,15 @@ bool _first=false;
                                    },
                                  );
                                } else {
- return Center(child: Text('No Data'),);
+ return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+
+      Image.asset('assets/images/package.png') ,
+Text('No Leads found')
+    ],
+  );
 
                                }
                              }
@@ -242,11 +271,27 @@ bool _first=false;
                              } 
                              
                              else if  (model.state ==ViewState.EROR){
-  return Center(child: Text('Error'),);   
+  return   Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+
+      Image.asset('assets/images/cross.png') ,
+Text('Something going wroing')
+    ],
+  ); 
                            
                              }
                              else if(model.lead ==null){
-                               return Center(child: Text('No one selected'),);   
+                               return   Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+
+      Image.asset('assets/images/no_selection.png') ,
+Text('No Leads Selected')
+    ],
+  );   
                              }
                       return 
                       
