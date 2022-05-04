@@ -54,454 +54,473 @@ bool _first=false;
            body: 
            
           SafeArea(
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-              child: Container(
-                width: double.infinity,
-                 height: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
+            child: RefreshIndicator(
+              onRefresh: ()async{
+                await  ctrl.fetchLeads();
+              },
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                child: Container(
+                  width: double.infinity,
+                   height: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                    
+                    ),
+                    child: Column(
+                      children: [
+                    Container(height: 80,width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.all(20),
+                    child: Center(child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   
-                  ),
-                  child: Column(
-                    children: [
-                  Container(height: 80,width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(20),
-                  child: Center(child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                
-                Text('Leads' , style: TextStyle(fontWeight: FontWeight.bold , color: Colors.white ,fontSize: 20),) ,
-                  
-                IconButton(onPressed: ()async{
-
-
+                  Text('Leads' , style: TextStyle(fontWeight: FontWeight.bold , color: Colors.white ,fontSize: 20),) ,
+                    
+                  IconButton(onPressed: ()async{
             
-                }, icon: Icon(Icons.notifications , color: Colors.white,)) 
-              ],
-                  ),),
-                  
-                  ),
-                  
-                  
-                       Expanded(
-                         child: AnimatedCrossFade(
-                         firstCurve: Curves.easeOutBack,
-                         secondCurve: Curves.easeInBack,
-                         firstChild: Container(
-                            height: MediaQuery.of(context).size.height,
-                           width: double.infinity,
-                          decoration: BoxDecoration(
-                             color: Colors.white,
-                             
-                                       borderRadius: BorderRadius.only(topRight:Radius.circular(25) ,  topLeft:Radius.circular(25)   )
             
-                          ),
-                           child: 
-                           ViewModelBuilder<HomeViewModel>.reactive(
-                             viewModelBuilder: ()=>HomeViewModel(), 
-                             
-                             onModelReady: (mdl)async{
-                            await   mdl.fetchLeads();
-                             },
-                             builder: (ctx , model , child){
-
-                             if (model.state ==ViewState.BUSY) {
-                               return Center(child: CircularProgressIndicator(),);
-                             } 
-                             
-                             else if  (model.state ==ViewState.EROR){
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-
-      Image.asset('assets/images/cross.png') ,
-Text('Something going wrong')
-    ],
-  );
-                            
-                            
-                            
-                            
-                             }else {
-
-
-                               if (model.leads .length >0) {
-                                 return ListView.builder(
-                                   itemCount: model.leads.length,
-                                   itemBuilder: (BuildContext context, int index) {
-                                     return 
-                                     InkWell(
-                                       onTap: ()async{
-                                         ctrl.setLead(model.leads[index]);
-                                         ctrl.toggleShow(false);
-                                       },
-                                       child: Container(
-                                     height: 150,
-                                     margin: EdgeInsets.all(8),
-                                     
-                                         decoration: BoxDecoration(
-                                           borderRadius: BorderRadius.circular(20),
-                                           boxShadow: [
-                                             BoxShadow(
-                                               color: Colors.grey.withOpacity(.05),
-                                     offset: Offset(0 ,-4)
-                                             )
-                                           ]
-                                         ),
-                                     child:  Column(
-                                       children: [
-                                             Row(
-                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                               children: [
-                                                 CircleAvatar(
-                                                   backgroundColor: Colors.green,
-                                                   radius: 40,
-                                                   child: Center(child:Text(model.leads[index].name!.substring(0,1).toUpperCase() ,
-                                                    style: TextStyle(fontWeight: FontWeight.bold),)),
-                                                 
-                                                 ) ,
-                                     
-                                                 Column(
-                                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                     
+              
+                  }, icon: Icon(Icons.notifications , color: Colors.white,)) 
+                ],
+                    ),),
+                    
+                    ),
+                    
+                    
+                         Expanded(
+                           child: AnimatedCrossFade(
+                           firstCurve: Curves.easeOutBack,
+                           secondCurve: Curves.easeInBack,
+                           firstChild: Container(
+                              height: MediaQuery.of(context).size.height,
+                             width: double.infinity,
+                            decoration: BoxDecoration(
+                               color: Colors.white,
+                               
+                                         borderRadius: BorderRadius.only(topRight:Radius.circular(25) ,  topLeft:Radius.circular(25)   )
+              
+                            ),
+                             child: 
+                             ViewModelBuilder<HomeViewModel>.reactive(
+                               viewModelBuilder: ()=>HomeViewModel(), 
+                               
+                               onModelReady: (mdl)async{
+                              await   mdl.fetchLeads();
+                               },
+                               builder: (ctx , model , child){
+            
+                               if (model.state ==ViewState.BUSY) {
+                                 return Center(child: CircularProgressIndicator(),);
+                               } 
+                               
+                               else if  (model.state ==ViewState.EROR){
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+            
+                  Image.asset('assets/images/cross.png' , height: 200 ,width: 200,) ,
+            SizedBox(height: 20,),
+            Text('Something went wrong')
+                ],
+              );
+                              
+                              
+                              
+                              
+                               }else {
+            
+            
+                                 if (model.leads .length >0) {
+                                   return RefreshIndicator(
+                                     onRefresh:()async{
+                                          await model.fetchLeads();
+                                     } ,
+                                     child: ListView.builder(
+                                       itemCount: model.leads.length,
+                                       itemBuilder: (BuildContext context, int index) {
+                                         return 
+                                         InkWell(
+                                           onTap: ()async{
+                                             ctrl.setLead(model.leads[index]);
+                                             ctrl.toggleShow(false);
+                                           },
+                                           child: Container(
+                                         height: 150,
+                                         margin: EdgeInsets.all(8),
+                                         
+                                             decoration: BoxDecoration(
+                                               borderRadius: BorderRadius.circular(20),
+                                               boxShadow: [
+                                                 BoxShadow(
+                                                   color: Colors.grey.withOpacity(.05),
+                                         offset: Offset(0 ,-4)
+                                                 )
+                                               ]
+                                             ),
+                                         child:  Column(
+                                           children: [
+                                                 Row(
+                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                    children: [
-                                     Text(model.leads[index].name!),
-                                     SizedBox(height: 15,),
-                                     Row(mainAxisSize: MainAxisSize.min ,
-                                     children: [
-                                       Text("created At: "),
-                                       SizedBox(width: 8,),
-                                     Text(model.leads[index].createdAt!),
-                                     
-                                     ],)
-                                     
+                                                     CircleAvatar(
+                                                       backgroundColor: Colors.green,
+                                                       radius: 40,
+                                                       child: Center(child:Text(model.leads[index].name!.substring(0,1).toUpperCase() ,
+                                                        style: TextStyle(fontWeight: FontWeight.bold),)),
+                                                     
+                                                     ) ,
+                                         
+                                                     Column(
+                                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                         
+                                                       children: [
+                                         Text(model.leads[index].name!),
+                                         SizedBox(height: 15,),
+                                         Row(mainAxisSize: MainAxisSize.min ,
+                                         children: [
+                                           Text("created At: "),
+                                           SizedBox(width: 8,),
+                                         Text(model.leads[index].createdAt!),
+                                         
+                                         ],)
+                                         
+                                                       ],
+                                                     ) ,
+                                                     IconButton(onPressed: (){}, icon: Icon(Icons.more_vert))
                                                    ],
                                                  ) ,
-                                                 IconButton(onPressed: (){}, icon: Icon(Icons.more_vert))
-                                               ],
-                                             ) ,
-                                     
-                                             Row(mainAxisAlignment: MainAxisAlignment.end,
-                                             
-                                             children: [
-                                               Container(width: 40,height: 40,
-                                               
-                                               decoration: BoxDecoration(
-                                                 color: Colors.grey.withOpacity(0.1),
-                                                 shape: BoxShape.circle
-                                               ),
-                                               
-                                               child: Center(child: IconButton(onPressed: ()async{
-
-var uri =Uri.parse(
-  // scheme:
-  'https://www.google.com/maps/search/?api=1&query=${ctrl.lead!.lat},${ctrl.lead!.lon}');
-  await launchUrl(uri);
-
+                                         
+                                                 Row(mainAxisAlignment: MainAxisAlignment.end,
                                                  
-                                               }, icon: Icon(Icons.location_on)),),
-                                               ),
-                                     SizedBox(width: 10,),
-                                                Container(width: 40,height: 40,
+                                                 children: [
+                                                   Container(width: 40,height: 40,
+                                                   
+                                                   decoration: BoxDecoration(
+                                                     color: Colors.grey.withOpacity(0.1),
+                                                     shape: BoxShape.circle
+                                                   ),
+                                                   
+                                                   child: Center(child: IconButton(onPressed: ()async{
                                                
-                                               decoration: BoxDecoration(
-                                                 color: Colors.grey.withOpacity(0.1),
-                                                 shape: BoxShape.circle ,
-                                                 
-                                               ),
+                                               var uri =Uri.parse(
+                                                 // scheme:
+                                                 'https://www.google.com/maps/search/?api=1&query=${ctrl.lead!.lat},${ctrl.lead!.lon}');
+                                                 await launchUrl(uri);
                                                
-                                                     child: Center(child: IconButton(onPressed: ()async{
-  await launchUrl(Uri(
-        scheme:
-        'tel' ,  path: '${ctrl.lead!.phone}'));
-
-                                                     }, icon: Icon(Icons.call)),),
-                                     
-                                               )
-                                             ],
-                                             )
-                                       ],
-                                     )
-                                     
-                                       ),
-                                     );
-                                     
-                                     ;
-                                   },
-                                 );
-                               } else {
- return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-
-      Image.asset('assets/images/package.png') ,
-Text('No Leads found')
-    ],
-  );
-
+                                                     
+                                                   }, icon: Icon(Icons.location_on)),),
+                                                   ),
+                                         SizedBox(width: 10,),
+                                                    Container(width: 40,height: 40,
+                                                   
+                                                   decoration: BoxDecoration(
+                                                     color: Colors.grey.withOpacity(0.1),
+                                                     shape: BoxShape.circle ,
+                                                     
+                                                   ),
+                                                   
+                                                         child: Center(child: IconButton(onPressed: ()async{
+                                                 await launchUrl(Uri(
+                                                       scheme:
+                                                       'tel' ,  path: '${ctrl.lead!.phone}'));
+                                               
+                                                         }, icon: Icon(Icons.call)),),
+                                         
+                                                   )
+                                                 ],
+                                                 )
+                                           ],
+                                         )
+                                         
+                                           ),
+                                         );
+                                         
+                                         ;
+                                       },
+                                     ),
+                                   );
+                                 } else {
+             return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+            
+                  Image.asset('assets/images/package.png' , height: 200,width: 200,) ,
+                  SizedBox(height: 20,),
+            Text('No Leads found')
+                ],
+              );
+            
+                                 }
                                }
-                             }
-                           })
-                           
-                           
-                           
-                           ),
-
-
-
-
-                         secondChild: Container(
-                           height: MediaQuery.of(context).size.height,
-                           width: double.infinity,
-                           color: Colors.white,
-                           child:
-                         ViewModelBuilder<HomeViewModel>.reactive(
-                             viewModelBuilder: ()=>HomeViewModel(), 
+                             })
                              
-                             onModelReady: (mdl)async{
-                            await   mdl.fetchLeads();
-                             },
-                             builder: (ctx , model , child){
-
-                             if (model.state ==ViewState.BUSY) {
-                               return Center(child: CircularProgressIndicator(),);
-                             } 
                              
-                             else if  (model.state ==ViewState.EROR){
-  return   Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-
-      Image.asset('assets/images/cross.png') ,
-Text('Something going wroing')
-    ],
-  ); 
-                           
-                             }
-                             else if(model.lead ==null){
-                               return   Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-
-      Image.asset('assets/images/no_selection.png') ,
-Text('No Leads Selected')
-    ],
-  );   
-                             }
-                      return 
-                      
-
-                      
-                          Stack(
-                             children: [
-                               Align(alignment: Alignment.topLeft,
-                               child: InkWell(
-                                 onTap: (){
-                                    ctrl.toggleShow(true);
-
-                                 },
-                                 child: Container(
-                                   width: 30,height: 30,
-                                   margin: EdgeInsets.all(10),
-                                   decoration: BoxDecoration(
-                                     shape: BoxShape.circle ,
-                               color: Colors.red
-                                   ),
-                                   child: Center(
-                                     child:
-                                    //   IconButton(onPressed: (){
-                                    //    ctrl.setLead(null);
-                                    //  }, icon: 
-                                     
-                                     Icon(Icons.close ,color: Colors.white,size: 15,)
-                                     //),
-                                   ),
-                                 ),
-                               ),
-                               ) ,
-                               Column(
+                             
+                             ),
+            
+            
+            
+            
+                           secondChild: Container(
+                             height: MediaQuery.of(context).size.height,
+                             width: double.infinity,
+                             color: Colors.white,
+                             child:
+                           ViewModelBuilder<HomeViewModel>.reactive(
+                               viewModelBuilder: ()=>HomeViewModel(), 
+                               
+                               onModelReady: (mdl)async{
+                              await   mdl.fetchLeads();
+                               },
+                               builder: (ctx , model , child){
+            
+                               if (model.state ==ViewState.BUSY) {
+                                 return Center(child: CircularProgressIndicator(),);
+                               } 
+                               
+                               else if  (model.state ==ViewState.EROR){
+              return   Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+            
+                  Image.asset('assets/images/cross.png' , height: 200 ,width: 200,) ,
+                  SizedBox(height: 20,),
+            Text('Something going wroing')
+                ],
+              ); 
+                             
+                               }
+                               else if(model.lead ==null){
+                                 return   Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+            
+                  Image.asset('assets/images/no_selection.png' , width: 200 ,height: 200,) ,
+                  SizedBox(height: 20,),
+            Text('No Leads Selected')
+                ],
+              );   
+                               }
+                        return 
+                        
+            
+                        
+                            RefreshIndicator(
+                              onRefresh: ()async{
+                                await model.fetchLeads();
+                              },
+                              child: Stack(
                                  children: [
-                                   SizedBox(height: 20,),
-                                   Center(
-                                     child: CircleAvatar(
-                                       radius: 80,
-                                       backgroundColor: Colors.green,
-                                       child: Text(model.lead!.name!.substring(0,1).toUpperCase() ,
-                                       style: TextStyle(fontWeight: FontWeight.w900 ,fontSize: 25),
+                                   Align(alignment: Alignment.topLeft,
+                                   child: InkWell(
+                                     onTap: (){
+                                        ctrl.toggleShow(true);
+                                        
+                                     },
+                                     child: Container(
+                                       width: 30,height: 30,
+                                       margin: EdgeInsets.all(10),
+                                       decoration: BoxDecoration(
+                                         shape: BoxShape.circle ,
+                                   color: Colors.red
+                                       ),
+                                       child: Center(
+                                         child:
+                                        //   IconButton(onPressed: (){
+                                        //    ctrl.setLead(null);
+                                        //  }, icon: 
+                                         
+                                         Icon(Icons.close ,color: Colors.white,size: 15,)
+                                         //),
                                        ),
                                      ),
+                                   ),
                                    ) ,
-                                      SizedBox(height: 10,),
-                                     
-                                      Text(model.lead!.name !,  style: TextStyle(color: Colors.green , fontWeight: FontWeight.bold ,fontSize: 20), ) ,
- SizedBox(height: 10,),
-                                     
-                                     
-                                     
-                                      Text(model.lead!.email!,  style: TextStyle(color: Colors.green  ,fontSize: 20), ) ,
-
-SizedBox(height: 30,) ,
-Expanded(
-  child:   Container(
-    margin: EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: Colors.green,
-      borderRadius: BorderRadius.only(topLeft: Radius.circular(20), 
-      
-      topRight: Radius.circular(20), 
-
-
-      )
-    ),
-  child: Center(child: GridView.count(crossAxisCount: 2 ,
- // childAspectRatio: (itemHeight/itemWidht),
- 
-  children: [
-     InkWell(
-       onTap: ()async{
-         await launchUrl(Uri(
-        scheme:
-        'tel' ,  path: '${ctrl.lead!.phone}'));
-      
-       },
-       child: Container(width: 80,height: 80,
-         margin: EdgeInsets.all(10),
-         decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle ,
-        
-       
-         ),
-         child: Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.call , color: Colors.green,size: 30,) ,
-          Text('Call', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
-     
-        ],
-         ),),
-         ),
-     ) ,
-     InkWell(
-       onTap: ()async{
-      
-      await launchUrl(Uri(
-        scheme:
-        'sms' ,  path: '${ctrl.lead!.phone}'));
-      
-      
-      //   Navigator.push(context, MaterialPageRoute(builder: ((context) => ChatView(lead: ctrl.lead,))));
-       },
-       child: Container(width: 80,height: 80,
-         margin: EdgeInsets.all(10),
-         decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle
-       
-         ),
-      child:    Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.message , color: Colors.green,size: 30,) ,
-          Text('Text', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
-     
-        ],
-         ),),
-         ),
-     ),
-     InkWell(
-       onTap: ()async{
-         final Uri emailLaunchUri = Uri(
-  scheme: 'mailto',
-  path:ctrl.lead!.email,
-  query: json.encode(<String, String>{
-    'subject': 'Hello  , mr ${ctrl.lead!.name}'
-  }),
-);
-
-await launchUrl(emailLaunchUri);
-       
-            await launchUrl(Uri(
-      scheme:
-      'tel:${ctrl.lead!.phone}'));
-       },
-       child: Container(width: 80,height: 80,
-         margin: EdgeInsets.all(10),
-         decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle
-       
-         ),
-         child:  Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.email , color: Colors.green,size: 30,) ,
-          Text('Email', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
-          
-        ],
-         ),),
-         ),
-     ) ,
-     InkWell(
-       onTap:()async{
-         log('https://www.google.com/maps/dir/?api=1&destination=${ctrl.lead!.lat},${ctrl.lead!.lon}');
-
-var uri =Uri.parse(
-  // scheme:
-  'https://www.google.com/maps/search/?api=1&query=${ctrl.lead!.lat},${ctrl.lead!.lon}');
-  await launchUrl(uri);
-       } ,
-       child: Container(width: 80,height: 80,
-         margin: EdgeInsets.all(10),
-         decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle
-       
-         ),
-         child:  Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.location_on , color: Colors.green,size: 30,) ,
-          Text('GPS', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
-     
-        ],
-         ),),
-         ),
-     )
-  ],
-  ),),
-  ),
-)
-
-
+                                   Column(
+                                     children: [
+                                       SizedBox(height: 20,),
+                                       Center(
+                                         child: CircleAvatar(
+                                           radius: 80,
+                                           backgroundColor: Colors.green,
+                                           child: Text(model.lead!.name!.substring(0,1).toUpperCase() ,
+                                           style: TextStyle(fontWeight: FontWeight.w900 ,fontSize: 25),
+                                           ),
+                                         ),
+                                       ) ,
+                                          SizedBox(height: 10,),
+                                         
+                                          Text(model.lead!.name !,  style: TextStyle(color: Colors.green , fontWeight: FontWeight.bold ,fontSize: 20), ) ,
+                                         SizedBox(height: 10,),
+                                         
+                                         
+                                         
+                                          Text(model.lead!.email!,  style: TextStyle(color: Colors.green  ,fontSize: 20), ) ,
+                                        
+                                        SizedBox(height: 30,) ,
+                                        Expanded(
+                                          child:   Container(
+                                            margin: EdgeInsets.all(20),
+                                            decoration: BoxDecoration(
+                                              color: Colors.green,
+                                              borderRadius: BorderRadius.only(topLeft: Radius.circular(20), 
+                                              
+                                              topRight: Radius.circular(20), 
+                                        
+                                        
+                                              )
+                                            ),
+                                          child: Center(child: GridView.count(crossAxisCount: 2 ,
+                                         // childAspectRatio: (itemHeight/itemWidht),
+                                         
+                                          children: [
+                                             InkWell(
+                                               onTap: ()async{
+                                                 await launchUrl(Uri(
+                                                scheme:
+                                                'tel' ,  path: '${ctrl.lead!.phone}'));
+                                              
+                                               },
+                                               child: Container(width: 80,height: 80,
+                                                 margin: EdgeInsets.all(10),
+                                                 decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle ,
+                                                
+                                               
+                                                 ),
+                                                 child: Center(child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.call , color: Colors.green,size: 30,) ,
+                                                  Text('Call', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
+                                             
+                                                ],
+                                                 ),),
+                                                 ),
+                                             ) ,
+                                             InkWell(
+                                               onTap: ()async{
+                                              
+                                              await launchUrl(Uri(
+                                                scheme:
+                                                'sms' ,  path: '${ctrl.lead!.phone}'));
+                                              
+                                              
+                                              //   Navigator.push(context, MaterialPageRoute(builder: ((context) => ChatView(lead: ctrl.lead,))));
+                                               },
+                                               child: Container(width: 80,height: 80,
+                                                 margin: EdgeInsets.all(10),
+                                                 decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle
+                                               
+                                                 ),
+                                              child:    Center(child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.message , color: Colors.green,size: 30,) ,
+                                                  Text('Text', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
+                                             
+                                                ],
+                                                 ),),
+                                                 ),
+                                             ),
+                                             InkWell(
+                                               onTap: ()async{
+                                                 final Uri emailLaunchUri = Uri(
+                                          scheme: 'mailto',
+                                          path:ctrl.lead!.email,
+                                          query: json.encode(<String, String>{
+                                            'subject': 'Hello  , mr ${ctrl.lead!.name}'
+                                          }),
+                                        );
+                                        
+                                        await launchUrl(emailLaunchUri);
+                                               
+                                          await launchUrl(Uri(
+                                              scheme:
+                                              'tel:${ctrl.lead!.phone}'));
+                                               },
+                                               child: Container(width: 80,height: 80,
+                                                 margin: EdgeInsets.all(10),
+                                                 decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle
+                                               
+                                                 ),
+                                                 child:  Center(child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.email , color: Colors.green,size: 30,) ,
+                                                  Text('Email', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
+                                                  
+                                                ],
+                                                 ),),
+                                                 ),
+                                             ) ,
+                                             InkWell(
+                                               onTap:()async{
+                                                 log('https://www.google.com/maps/dir/?api=1&destination=${ctrl.lead!.lat},${ctrl.lead!.lon}');
+                                        
+                                        var uri =Uri.parse(
+                                          // scheme:
+                                          'https://www.google.com/maps/search/?api=1&query=${ctrl.lead!.lat},${ctrl.lead!.lon}');
+                                          await launchUrl(uri);
+                                               } ,
+                                               child: Container(width: 80,height: 80,
+                                                 margin: EdgeInsets.all(10),
+                                                 decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle
+                                               
+                                                 ),
+                                                 child:  Center(child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.location_on , color: Colors.green,size: 30,) ,
+                                                  Text('GPS', style: TextStyle(color: Colors.green ,  fontSize: 25),) ,
+                                             
+                                                ],
+                                                 ),),
+                                                 ),
+                                             )
+                                          ],
+                                          ),),
+                                          ),
+                                        )
+                                        
+                                        
+                                     ],
+                                   )
                                  ],
-                               )
-                             ],
-                           );
-                             }
-                         )
-                         
-      
-      
+                               ),
+                            );
+                               }
+                           )
                            
-                           
-                           ),
-                         crossFadeState:
-                       ctrl.showFirst      ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                         duration: Duration(milliseconds: 800),        
-                       ),
-                       ),
-                    ],
-                  ),
+                  
+                  
+                             
+                             
+                             ),
+                           crossFadeState:
+                         ctrl.showFirst      ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                           duration: Duration(milliseconds: 800),        
+                         ),
+                         ),
+                      ],
+                    ),
+                ),
               ),
             ),
           ) ,
